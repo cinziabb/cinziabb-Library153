@@ -2,8 +2,6 @@ package com.generation153.library.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,9 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @Slf4j
 @Entity
-@Table(name = "users")
-public class User {
-
+@Table(name = "authors")
+public class Author {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //auto_increment
 	private Integer id;
@@ -28,11 +25,18 @@ public class User {
 	private String firstName;
 	@Column(name = "last_name", nullable = false, length = 128)
 	private String lastName;
-	@Column(nullable = false, unique = true, length = 128)
-	private String email;
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private EnumRole role;
-	@Column(nullable = false)
-	private boolean blocked;
+	
+	  @Override
+	    public int hashCode() {
+	        return getClass().hashCode();
+	    }
+		
+	 @Override
+	    public boolean equals(Object o) {
+	        if (this == o) return true;
+	        if (o == null || getClass() != o.getClass()) return false;
+	        Author other = (Author) o;
+	        return id != null && id.equals(other.id);
+	    }
+	  
 }

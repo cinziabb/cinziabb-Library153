@@ -1,5 +1,7 @@
 package com.generation153.library.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,21 +20,28 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Setter
 @NoArgsConstructor
-@Slf4j
+@Slf4j	//è più evoluto rispetto a @Log
 @Entity
-@Table(name = "copies")
-public class Copy {
-
+@Table(name = "bookings")
+public class Booking {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	
 	@Column(nullable = false)
-	private boolean available;
+	private LocalDate date;
+	
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private EnumCopyStatus status;
+	private EnumBookingStatus status;
+	
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 	
 	@ManyToOne
 	@JoinColumn(name = "book_id")
 	private Book book;
+
 }
