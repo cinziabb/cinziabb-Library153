@@ -5,13 +5,16 @@ import java.util.Optional;
 
 import com.generation153.library.entity.Copy;
 import com.generation153.library.exception.NotFoundException;
+import com.generation153.library.repository.BookRepository;
 import com.generation153.library.repository.CopyRepository;
 
 public class CopyServiceImpl implements CopyService {
 	private final CopyRepository copyRepository;
+	private final BookRepository bookRepository;
 
-	public CopyServiceImpl(CopyRepository copyRepository) {
+	public CopyServiceImpl(CopyRepository copyRepository, BookRepository bookRepository) {
 		this.copyRepository = copyRepository;
+		this.bookRepository = bookRepository;
 	}
 
 	@Override
@@ -24,12 +27,14 @@ public class CopyServiceImpl implements CopyService {
 		if (id == null)
 			new NotFoundException("id nullo");
 		Optional<Copy> copy = copyRepository.findById(id);
-		return copy.get();
+		return copy.orElseThrow(() -> new NotFoundException("Copia non trovata"));
 	}
 
 	@Override
 	public Copy saveCopy(Copy copy) {
-		// TODO Auto-generated method stub
+		if(copy == null)
+			new NotFoundException("Copia nulla");
+		//if(copy.)
 		return null;
 	}
 
