@@ -72,7 +72,7 @@ public class PublisherServiceImpl implements PublisherService{
 		Publisher publisherList = publisherRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Publisher " + publisher + " con id " + id + " non trovato"));
 		
-		if(publisher.getName() != null || !publisher.getName().isBlank()) {
+		if(publisher.getName() != null && !publisher.getName().isBlank()) {
 			publisherList.setName(publisher.getName());
 		}
 		return publisherRepository.save(publisherList);
