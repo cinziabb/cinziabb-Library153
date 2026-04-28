@@ -98,8 +98,11 @@ public class CopyServiceImpl implements CopyService {
 	
 	@Override
 	public Boolean isLendableCopy(Copy copy) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if(copy.getBook().getLendable() == true)
+			return true;
+		
+		return false;
 	}
 
 	@Override
