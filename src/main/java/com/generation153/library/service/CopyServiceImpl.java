@@ -23,6 +23,12 @@ public class CopyServiceImpl implements CopyService {
 	public List<Copy> findAllCopies() {
 		return copyRepository.findAll();
 	}
+	
+	@Override
+	public List<Copy> findCopyByStatus(EnumCopyStatus status) {
+		
+		return copyRepository.findByStatus(status);
+	}
 
 	@Override
 	public Copy findCopyById(Integer id) {
