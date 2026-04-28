@@ -52,7 +52,7 @@ public class CopyServiceImpl implements CopyService {
 			new NotFoundException("Copia nulla");
 
 		Copy copyTemp = copyRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("id della copia non trovato"));
+				.orElseThrow(() -> new NotFoundException("id della copia non trovato: " + id));
 
 		if (copy.getStatus() != null)
 			copyTemp.setStatus(copy.getStatus());
@@ -64,13 +64,19 @@ public class CopyServiceImpl implements CopyService {
 		
 		if(copy.getAvailable() != null)
 			copyTemp.setAvailable(copy.getAvailable());
-		return null;
+		
+		return copyRepository.save(copyTemp);
 	}
 
 	@Override
 	public void deleteCopyById(Integer id) {
-		// TODO Auto-generated method stub
-
+		if (id == null)
+			new NotFoundException("id nullo");
+		
+		Copy copyTemp = copyRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("id della copia non trovato: " + id));
+		
+		copyRepository.delete(copyTemp);
 	}
 
 	// metodi privati
