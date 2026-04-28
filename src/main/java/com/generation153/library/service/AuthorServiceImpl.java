@@ -75,10 +75,10 @@ public class AuthorServiceImpl implements AuthorService{
 		}
 
 		Author authorOpt = authorRepository.findById(id).orElseThrow(()-> new NotFoundException("Autore non trovato"));
-		if(author.getFirstName() != null || author.getFirstName().isBlank()) {
+		if(author.getFirstName() != null && author.getFirstName().isBlank()) {
 			authorOpt.setFirstName(author.getFirstName());
 		}
-		if(author.getLastName() != null || author.getLastName().isBlank()) {
+		if(author.getLastName() != null && author.getLastName().isBlank()) {
 			authorOpt.setLastName(author.getLastName());
 		}
 		return authorRepository.save(authorOpt);
