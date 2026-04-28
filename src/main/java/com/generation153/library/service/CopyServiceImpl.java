@@ -3,6 +3,7 @@ package com.generation153.library.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.generation153.library.entity.Book;
 import com.generation153.library.entity.Copy;
 import com.generation153.library.exception.NotFoundException;
 import com.generation153.library.repository.BookRepository;
@@ -50,9 +51,14 @@ public class CopyServiceImpl implements CopyService {
 		if (copy == null)
 			new NotFoundException("Copia nulla");
 
-		Copy copyTemp = copyRepository.findById(copy.getId())
+		Copy copyTemp = copyRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("id della copia non trovato"));
 
+		if (copy.getStatus() != null)
+			copyTemp.setStatus(copy.getStatus());
+
+//		if(copy.getBook() != null)
+//			Book book = 
 		return null;
 	}
 
@@ -62,4 +68,9 @@ public class CopyServiceImpl implements CopyService {
 
 	}
 
+	// metodi privati
+	private Book findBookInsideCopy(Copy copy) {
+		return bookRepository.findById(copy.getBook().getId())
+				.orElseThrow(() -> new NotFoundException("Libro non trovato con id: " + copy.getBook().getId()));
+	}
 }
