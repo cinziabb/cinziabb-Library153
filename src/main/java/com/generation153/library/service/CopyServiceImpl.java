@@ -32,15 +32,27 @@ public class CopyServiceImpl implements CopyService {
 
 	@Override
 	public Copy saveCopy(Copy copy) {
-		if(copy == null)
+		if (copy == null)
 			new NotFoundException("Copia nulla");
-		//if(copy.)
-		return null;
+
+		Copy copyTemp = copyRepository.findById(copy.getId()).get();
+		if (copy.getId().equals(copyTemp.getId()))
+			new NotFoundException("id della copia già esistente");
+
+		return copyRepository.save(copy);
 	}
 
 	@Override
 	public Copy updateCopyById(Copy copy, Integer id) {
-		// TODO Auto-generated method stub
+		if (id == null)
+			new NotFoundException("id nullo");
+
+		if (copy == null)
+			new NotFoundException("Copia nulla");
+
+		Copy copyTemp = copyRepository.findById(copy.getId())
+				.orElseThrow(() -> new NotFoundException("id della copia non trovato"));
+
 		return null;
 	}
 
