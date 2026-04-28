@@ -84,4 +84,22 @@ public class CopyServiceImpl implements CopyService {
 		return bookRepository.findById(copy.getBook().getId())
 				.orElseThrow(() -> new NotFoundException("Libro non trovato con id: " + copy.getBook().getId()));
 	}
+
+	@Override
+	public Boolean isAvailableCopy(Copy copy) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void markAsAvailableCopy(Copy copy) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void markAsBorrowedCopy(Copy copy) {
+		// TODO Auto-generated method stub
+		
+	}
 }
