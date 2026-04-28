@@ -66,7 +66,7 @@ public class AuthorServiceImpl implements AuthorService{
 		}
 		return authorRepository.save(authorOpt);
 	}
-
+//METODI DA IMPLEMENTARE
 	@Override
 	public Author updateAuthorById(Author author, Integer id) {
 		// TODO Auto-generated method stub
