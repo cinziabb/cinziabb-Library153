@@ -1,5 +1,9 @@
 package com.generation153.library.service;
 
+import java.util.List;
+
+import com.generation153.library.entity.Consultation;
+
 //vedere quali libri sono attualmente disponibili
 //vedere quali libri sono più richiesti o più prestati
 //visualizzare i libri attualmente in prestito
@@ -7,5 +11,11 @@ package com.generation153.library.service;
 
 
 public interface ConsultationService {
+	
+	List<Consultation> findAllConsultations();
+	Consultation saveConsultation(Consultation consultation);
+	Consultation findConsultationById(Integer id);
+	Consultation updateConsunltationById(Consultation consultation, Integer id);
+	void deleteConsutationById(Integer id);
 	
 }
