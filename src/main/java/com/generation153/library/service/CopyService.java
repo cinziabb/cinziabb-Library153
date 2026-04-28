@@ -8,13 +8,15 @@ import com.generation153.library.entity.EnumCopyStatus;
 public interface CopyService {
 
 	List<Copy> findAllCopies();
-	List<Copy> findCopyByStatus(EnumCopyStatus status);
+	List<Copy> findCopyByStatus(EnumCopyStatus status); // query
 	Copy findCopyById(Integer id);
 	Copy saveCopy(Copy copy);
 	Copy updateCopyById(Copy copy, Integer id);
 	void deleteCopyById(Integer id);
+	
 	Boolean isAvailableCopy(Copy copy);
 	Boolean isLendableCopy(Copy copy);
+	
 	void markAsAvailableCopy(Copy copy);
 	void markAsBorrowedCopy(Copy copy);
 	void markAsIntactCopy(Copy copy);
