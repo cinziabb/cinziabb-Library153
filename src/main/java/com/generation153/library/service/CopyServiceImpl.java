@@ -57,8 +57,13 @@ public class CopyServiceImpl implements CopyService {
 		if (copy.getStatus() != null)
 			copyTemp.setStatus(copy.getStatus());
 
-//		if(copy.getBook() != null)
-//			Book book = 
+		if(copy.getBook() != null) {
+			Book book = findBookInsideCopy(copy);
+			copyTemp.setBook(book);
+		}
+		
+		if(copy.getAvailable() != null)
+			copyTemp.setAvailable(copy.getAvailable());
 		return null;
 	}
 
