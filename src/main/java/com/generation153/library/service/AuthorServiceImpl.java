@@ -18,38 +18,82 @@ public class AuthorServiceImpl implements AuthorService{
 	}
 
 	@Override
-	public List<Author> finAllAuthor() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Author> findAllAuthors() {
+        return authorRepository.findAll();
+    }
+
+	public Author findAuthorById(Integer id) {
+		if(id == null) {
+			throw new IllegalArgumentException("Id " + id + " nullo");
+		}
+		Optional<Author> authors = authorRepository.findById(id);
+		return authors.orElseThrow(() -> new NotFoundException("Autore con id " + id + " non trovato"));
 	}
 
 	@Override
 	public Author saveAuthor(Author author) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public Author findAuthorById(Author author, Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		if(author == null) {
+			throw new IllegalArgumentException("Autore nullo");
+		}
+
+		List<Author> authors = authorRepository.findAll();
+		for(Author a : authors) {
+			if(a == author) {
+				throw new DuplicatedResourceException("L'autore esiste già");
+			}
+		}
+		return authorRepository.save(author);
 	}
 
 	@Override
 	public Author replaceAuthorById(Author author, Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		if(author == null) {
+			throw new IllegalArgumentException("Autore nullo");
+		}
+		if(id == null) {
+			throw new IllegalArgumentException("Id " + id + " nullo");
+		}
+		Author authorOpt = authorRepository.findById(id).orElseThrow(()-> new NotFoundException("Autore non trovato"));
+		authorOpt.setFirstName(author.getFirstName());
+		authorOpt.setLastName(author.getLastName());
+
+		return authorRepository.save(authorOpt);
 	}
+
+	//METODI DA IMPLEMENTARE
 
 	@Override
 	public Author updateAuthorById(Author author, Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		if(author == null) {
+			throw new IllegalArgumentException("Autore nullo");
+		}
+
+		if(id == null) {
+			throw new IllegalArgumentException("Id " + id + " nullo");
+		}
+
+		Author authorOpt = authorRepository.findById(id).orElseThrow(()-> new NotFoundException("Autore non trovato"));
+		if(author.getFirstName() != null && author.getFirstName().isBlank()) {
+			authorOpt.setFirstName(author.getFirstName());
+		}
+		if(author.getLastName() != null && author.getLastName().isBlank()) {
+			authorOpt.setLastName(author.getLastName());
+		}
+		return authorRepository.save(authorOpt);
 	}
 
 	@Override
 	public void deleteAuthorById(Integer id) {
-		// TODO Auto-generated method stub
+		
+		if(id == null) {
+			throw new IllegalArgumentException("Id " + id + " nullo");
+		}
+		
+		Author authorOpt = authorRepository.findById(id).orElseThrow(() -> new NotFoundException("Autore non trovato"));
+		
+		authorRepository.delete(authorOpt);
 		
 	}
-	}
+
+}
