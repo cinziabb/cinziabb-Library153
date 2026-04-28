@@ -12,6 +12,7 @@ public interface CopyService {
 	Copy updateCopyById(Copy copy, Integer id);
 	void deleteCopyById(Integer id);
 	Boolean isAvailableCopy(Copy copy);
+	Boolean isLendableCopy(Copy copy);
 	void markAsAvailableCopy(Copy copy);
 	void markAsBorrowedCopy(Copy copy);
 	

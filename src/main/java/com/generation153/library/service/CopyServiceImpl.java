@@ -95,6 +95,12 @@ public class CopyServiceImpl implements CopyService {
 		
 		return true;
 	}
+	
+	@Override
+	public Boolean isLendableCopy(Copy copy) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public void markAsAvailableCopy(Copy copy) {
@@ -107,4 +113,5 @@ public class CopyServiceImpl implements CopyService {
 		// TODO Auto-generated method stub
 		
 	}
+
 }
