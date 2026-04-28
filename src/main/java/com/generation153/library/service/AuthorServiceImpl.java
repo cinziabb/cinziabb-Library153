@@ -52,32 +52,49 @@ public class AuthorServiceImpl implements AuthorService{
 		if(author == null) {
 			throw new IllegalArgumentException("Autore nullo");
 		}
+		if(id == null) {
+			throw new IllegalArgumentException("Id " + id + " nullo");
+		}
+		Author authorOpt = authorRepository.findById(id).orElseThrow(()-> new NotFoundException("Autore non trovato"));
+		authorOpt.setFirstName(author.getFirstName());
+		authorOpt.setLastName(author.getLastName());
+
+		return authorRepository.save(authorOpt);
+	}
+
+	//METODI DA IMPLEMENTARE
+
+	@Override
+	public Author updateAuthorById(Author author, Integer id) {
+		if(author == null) {
+			throw new IllegalArgumentException("Autore nullo");
+		}
 
 		if(id == null) {
 			throw new IllegalArgumentException("Id " + id + " nullo");
 		}
 
 		Author authorOpt = authorRepository.findById(id).orElseThrow(()-> new NotFoundException("Autore non trovato"));
-		if(author.getFirstName() != null) {
+		if(author.getFirstName() != null || author.getFirstName().isBlank()) {
 			authorOpt.setFirstName(author.getFirstName());
 		}
-		if(author.getLastName() != null) {
+		if(author.getLastName() != null || author.getLastName().isBlank()) {
 			authorOpt.setLastName(author.getLastName());
 		}
 		return authorRepository.save(authorOpt);
 	}
-//METODI DA IMPLEMENTARE
-	@Override
-	public Author updateAuthorById(Author author, Integer id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void deleteAuthorById(Integer id) {
-		// TODO Auto-generated method stub
-
+		
+		if(id == null) {
+			throw new IllegalArgumentException("Id " + id + " nullo");
+		}
+		
+		Author authorOpt = authorRepository.findById(id).orElseThrow(() -> new NotFoundException("Autore non trovato"));
+		
+		authorRepository.delete(authorOpt);
+		
 	}
-
 
 }
