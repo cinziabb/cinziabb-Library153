@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class LoanServiceImpl implements LoanService {
+    private static final int LOAN_DURATION_DAYS = 7;
+
     private final LoanRepository loanRepository;
     private final UserRepository userRepository;
     private final CopyRepository copyRepository;
@@ -106,11 +108,11 @@ public class LoanServiceImpl implements LoanService {
         if (loan.getDate() != null && (savedLoan.getReturnDate() == null || !loan.getDate().isAfter(savedLoan.getReturnDate()))) {
             savedLoan.setDate(loan.getDate());
             // se cambia la data di inizio, cambia anche la data di restituzione prevista (7 giorni per un prestito)
-            savedLoan.setExpReturnDate(loan.getDate().plusDays(7));
+            savedLoan.setExpReturnDate(loan.getDate().plusDays(LOAN_DURATION_DAYS));
         }
 
         if (loan.getReturnDate() != null && loan.getReturnDate().isBefore(savedLoan.getDate())) {
-            throw new IllegalArgumentException("La data di ritorno non può essere prima di quella di inizio prestito");
+            throw new IllegalArgumentException("La data di ritorno deve essere dopo quella di inizio prestito");
         }
 
         if (loan.getReturnDate() != null && loan.getReturnDate().isAfter(savedLoan.getDate())) {
@@ -156,7 +158,7 @@ public class LoanServiceImpl implements LoanService {
     public List<Loan> findLateLoans() {
         return loanRepository.findByReturnDateIsNullAndExpReturnDateBefore(LocalDate.now());
     }
-    
+
     @Override
     public List<Loan> findAllActiveLoans() {
         return loanRepository.findByStatus(EnumLoanStatus.ACTIVE);
@@ -177,5 +179,10 @@ public class LoanServiceImpl implements LoanService {
 
     private Copy findCopyInsideLoan(Loan loan) {
         return copyRepository.findById(loan.getCopy().getId()).orElseThrow(() -> new NotFoundException("Copia non trovata con id: " + loan.getCopy().getId()));
+    }
+
+    private boolean isBookInsideCopyLendable(Copy copy) {
+        Book book = bookRepository.findById(copy.getBook().getId()).orElseThrow(() -> new NotFoundException("Libro non trovato con id: " + copy.getBook().getId()));
+        return book.getLendable();
     }
 }
