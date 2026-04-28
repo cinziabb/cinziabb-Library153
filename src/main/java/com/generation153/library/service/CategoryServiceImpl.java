@@ -88,7 +88,7 @@ public class CategoryServiceImpl implements CategoryService {
 			throw new IllegalArgumentException("Categoria nulla");
 		}
 		Category categoryOpt = categoryRepository.findById(id).orElseThrow(()-> new NotFoundException("Categoria non trovata"));
-		if(category.getName() != null || !category.getName().isBlank()) {
+		if(category.getName() != null && !category.getName().isBlank()) {
 			categoryOpt.setName(category.getName());
 		}
 		return categoryRepository.save(categoryOpt);
