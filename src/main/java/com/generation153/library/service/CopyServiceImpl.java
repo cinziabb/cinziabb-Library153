@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.generation153.library.entity.Book;
 import com.generation153.library.entity.Copy;
+import com.generation153.library.entity.EnumCopyStatus;
 import com.generation153.library.exception.NotFoundException;
 import com.generation153.library.repository.BookRepository;
 import com.generation153.library.repository.CopyRepository;
@@ -87,8 +88,12 @@ public class CopyServiceImpl implements CopyService {
 
 	@Override
 	public Boolean isAvailableCopy(Copy copy) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if(copy.getAvailable() == false)
+			if(copy.getStatus() == EnumCopyStatus.DAMAGED || copy.getStatus() == EnumCopyStatus.LOST)
+				return false;
+		
+		return true;
 	}
 
 	@Override
