@@ -10,5 +10,5 @@ public interface AuthorService {
 	Author findAuthorById(Author author, Integer id);
 	Author replaceAuthorById(Author author, Integer id);
 	Author updateAuthorById(Author author, Integer id);
-	
+	void deleteAuthorById(Integer id);
 }

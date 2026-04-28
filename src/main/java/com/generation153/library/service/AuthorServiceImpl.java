@@ -4,52 +4,99 @@ import java.util.List;
 import java.util.Optional;
 
 import com.generation153.library.entity.Author;
+import com.generation153.library.exception.DuplicatedResourceException;
+import com.generation153.library.exception.NotFoundException;
 import com.generation153.library.repository.AuthorRepository;
 
-public class AuthorServiceImpl implements AuthorService {
+
+public class AuthorServiceImpl implements AuthorService{
 
 	private final AuthorRepository authorRepository;
-	
+
 	public AuthorServiceImpl(AuthorRepository authorRepository) {
 		this.authorRepository = authorRepository;
 	}
 
-	@Override
-	public List<Author> finAllAuthor() {
+	public List<Author> findAllAuthors() {
 		return authorRepository.findAll();
 	}
 
-//	@Override
-//	public Author saveAuthor(Author author) {
-//		if(id==null) {
-//			throw new IllegalArgumentException("id" + "nullo");
-//		}
-//		Optional<Author> authors = authorRepository.findById(id);
-//		return author.orElseThrow(() -> new NotFoundException ("autore con id" + id+ "non trovato"));
-//	}
-//
-//	@Override
-//	public Author findAuthorById(Author author, Integer id) {
-//		if(id==null) {
-//			throw new IllegalArgumentException("autore nullo");
-//		} List<Author> authors
-//		return null;
-//	}
-
-	@Override
-	public Author replaceAuthorById(Author author, Integer id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Author updateAuthorById(Author author, Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Author findAuthorById(Integer id) {
+		if(id == null) {
+			throw new IllegalArgumentException("Id " + id + " nullo");
+		}
+		Optional<Author> authors = authorRepository.findById(id);
+		return authors.orElseThrow(() -> new NotFoundException("Autore con id " + id + " non trovato"));
 	}
 
 	@Override
 	public Author saveAuthor(Author author) {
+
+		if(author == null) {
+			throw new IllegalArgumentException("Autore nullo");
+		}
+
+		List<Author> authors = authorRepository.findAll();
+		for(Author a : authors) {
+			if(a == author) {
+				throw new DuplicatedResourceException("L'autore esiste già");
+			}
+		}
+		return authorRepository.save(author);
+	}
+
+	@Override
+	public Author replaceAuthorById(Author author, Integer id) {
+		if(author == null) {
+			throw new IllegalArgumentException("Autore nullo");
+		}
+		if(id == null) {
+			throw new IllegalArgumentException("Id " + id + " nullo");
+		}
+		Author authorOpt = authorRepository.findById(id).orElseThrow(()-> new NotFoundException("Autore non trovato"));
+		authorOpt.setFirstName(author.getFirstName());
+		authorOpt.setLastName(author.getLastName());
+
+		return authorRepository.save(authorOpt);
+	}
+
+	//METODI DA IMPLEMENTARE
+
+	@Override
+	public Author updateAuthorById(Author author, Integer id) {
+		if(author == null) {
+			throw new IllegalArgumentException("Autore nullo");
+		}
+
+		if(id == null) {
+			throw new IllegalArgumentException("Id " + id + " nullo");
+		}
+
+		Author authorOpt = authorRepository.findById(id).orElseThrow(()-> new NotFoundException("Autore non trovato"));
+		if(author.getFirstName() != null || author.getFirstName().isBlank()) {
+			authorOpt.setFirstName(author.getFirstName());
+		}
+		if(author.getLastName() != null || author.getLastName().isBlank()) {
+			authorOpt.setLastName(author.getLastName());
+		}
+		return authorRepository.save(authorOpt);
+	}
+
+	@Override
+	public void deleteAuthorById(Integer id) {
+		
+		if(id == null) {
+			throw new IllegalArgumentException("Id " + id + " nullo");
+		}
+		
+		Author authorOpt = authorRepository.findById(id).orElseThrow(() -> new NotFoundException("Autore non trovato"));
+		
+		authorRepository.delete(authorOpt);
+		
+	}
+
+	@Override
+	public List<Author> finAllAuthor() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -59,6 +106,5 @@ public class AuthorServiceImpl implements AuthorService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 
 }
