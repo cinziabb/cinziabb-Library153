@@ -15,5 +15,8 @@ public interface CopyService {
 	Boolean isLendableCopy(Copy copy);
 	void markAsAvailableCopy(Copy copy);
 	void markAsBorrowedCopy(Copy copy);
+	void markAsIntactCopy(Copy copy);
+	void markAsDamagedCopy(Copy copy);
+	void markAsLostCopy(Copy copy);
 	
 }
