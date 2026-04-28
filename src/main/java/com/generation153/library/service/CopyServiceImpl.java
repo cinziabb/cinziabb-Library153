@@ -107,14 +107,23 @@ public class CopyServiceImpl implements CopyService {
 
 	@Override
 	public void markAsAvailableCopy(Copy copy) {
-		// TODO Auto-generated method stub
 		
+		if(copy.getStatus() == EnumCopyStatus.DAMAGED || copy.getStatus() == EnumCopyStatus.LOST)
+			new NotFoundException("la copia è " + copy.getStatus());
+		
+		copy.setAvailable(true);
 	}
 
 	@Override
 	public void markAsBorrowedCopy(Copy copy) {
-		// TODO Auto-generated method stub
 		
+		if(copy.getStatus() == EnumCopyStatus.DAMAGED || copy.getStatus() == EnumCopyStatus.LOST)
+			new NotFoundException("la copia è " + copy.getStatus());
+		
+		if(copy.getAvailable() == false)
+			new NotFoundException("Copia già in prestito");
+		
+		copy.setAvailable(false);
 	}
 
 }
