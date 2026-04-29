@@ -12,6 +12,6 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Inte
 	
 	List<Consultation> findByUser(User user);
 	List<Consultation> findByCopy(Copy copy);
-	List<Consultation> findByAvailable(Boolean available);
+	List<Consultation> findByEndTimeIsNull();
 	List<Consultation> findByEndTimeIsNotNull();
 }
