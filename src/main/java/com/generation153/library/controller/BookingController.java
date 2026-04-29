@@ -72,7 +72,7 @@ public class BookingController {
 		//La risposta HTTP sarà 204 no content
 		@DeleteMapping("/{id}")
 		public void deleteBooking(@PathVariable Integer id) {
-			return bookingService.deleteBookingbyId(id);
+			 bookingService.deleteBookingbyId(id);
 		}
 		
 }
