@@ -26,5 +26,6 @@ public interface ConsultationService {
 	List<Consultation> findConsultationByUser(User user);
 	List<Consultation> findConsultationByCopy(Copy copy);
 	List<Consultation> findConsultationByAvailable(Boolean available);
+	List<Consultation> findCompletedConsultation();
 	
 }
