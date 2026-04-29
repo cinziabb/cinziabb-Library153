@@ -21,10 +21,16 @@ public class AuthorServiceImpl implements AuthorService{
 
 	@Override
 	public List<Author> findAllAuthors() {
-		return authorRepository.findAll();
-	}
+//<<<<<<< HEAD
+        return authorRepository.findAll();
+    }
+
+//=======
+//		return authorRepository.findAll();
+	//}
 
 	@Override
+//>>>>>>> refs/remotes/origin/develop
 	public Author findAuthorById(Integer id) {
 		if(id == null) {
 			throw new IllegalArgumentException("Id " + id + " nullo");
