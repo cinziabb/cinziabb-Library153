@@ -1,7 +1,6 @@
 package com.generation153.library.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.generation153.library.entity.Consultation;
 import com.generation153.library.entity.Copy;
@@ -17,12 +16,14 @@ public class ConsultationServiceImpl implements ConsultationService {
 	private final ConsultationRepository consultationRepository;
 	private final UserRepository userRepository;
 	private final CopyRepository copyRepository;
+	private final CopyService copyService;
 
 	public ConsultationServiceImpl(ConsultationRepository consultationRepository, UserRepository userRepository,
-			CopyRepository copyRepository) {
+			CopyRepository copyRepository, CopyService copyService) {
 		this.consultationRepository = consultationRepository;
 		this.userRepository = userRepository;
 		this.copyRepository = copyRepository;
+		this.copyService = copyService;
 	}
 
 	@Override
@@ -102,7 +103,20 @@ public class ConsultationServiceImpl implements ConsultationService {
 
 	@Override
 	public Consultation startConsultation(Copy copy, User user) {
-		// TODO Auto-generated method stub
+		
+		if(copy == null)
+			new NotFoundException("Copia nulla");
+		
+		if(user == null)
+			new NotFoundException("User nullo");
+		
+		copyService.isAvailableCopy(copy);
+		
+		Consultation consultation = new Consultation();
+		
+		
+		copyService.markAsBorrowedCopy(copy);
+		
 		return null;
 	}
 
