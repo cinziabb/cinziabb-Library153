@@ -23,4 +23,8 @@ public interface ConsultationService {
 	Consultation startConsultation(Copy copy, User user);
 	void endConsultation(Consultation consultation, Integer id);
 	
+	List<Consultation> findConsultationByUser(User user);
+	List<Consultation> findConsultationByCopy(Copy copy);
+	List<Consultation> findConsultationByAvailable(Boolean available);
+	
 }
