@@ -29,18 +29,6 @@ public interface ConsultationService {
 	List<Consultation> findCompletedConsultation();
 	
 	List<Object[]> findMostWantedBook();
-	/*
-	 * SELECT DISTINCT b.title
-	 * FROM consultation co
-	 * JOIN copy c ON co.copy_id = c.id
-	 * JOIN book b ON c.book_id = b.id
-	 * WHERE c.available = false
-	 * ORDER BY b.title;
-	 * 
-	 * SELECT DISTINCT c.copy.book.title
-	 * FROM Consultation c
-	 * WHERE c.copy.available
-	 * ORDER BY c.copy.book.title
-	 */
+	List<Object> findBorrowedBook();
 	
 }

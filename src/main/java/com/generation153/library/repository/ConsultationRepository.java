@@ -16,10 +16,17 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Inte
 	List<Consultation> findByEndTimeIsNull();
 	List<Consultation> findByEndTimeIsNotNull();
 	@Query ("""
-			SELECT c.copy.book.title, COUNT(c)
-			FROM Consultation c
-			GROUP BY c.copy.book.title
+			SELECT c.copy.book.title, COUNT(c) 
+			FROM Consultation c 
+			GROUP BY c.copy.book.title 
 			ORDER BY COUNT(c) DESC
 			""")
 	List<Object[]> findMostConsulted();
+	@Query("""
+			SELECT DISTINCT c.copy.book.title 
+			FROM Consultation c 
+			WHERE c.copy.available 
+			ORDER BY c.copy.book.title
+			""")
+	List<Object> findBorrowedBook();
 }
