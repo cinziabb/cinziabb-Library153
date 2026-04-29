@@ -39,7 +39,7 @@ public class PublisherServiceImpl implements PublisherService{
 		}
 		List<Publisher> publisherList = publisherRepository.findAll(); 
 		for(Publisher p : publisherList) {
-			if(p == publisher) {
+			if(p.equals(publisher)) {
 				throw new DuplicatedResourceException("Publisher " + p + " già presente"); 
 			}
 		}

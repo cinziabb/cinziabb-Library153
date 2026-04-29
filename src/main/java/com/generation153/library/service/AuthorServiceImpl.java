@@ -48,7 +48,7 @@ public class AuthorServiceImpl implements AuthorService{
 
 		List<Author> authors = authorRepository.findAll();
 		for(Author a : authors) {
-			if(a == author) {
+			if(a.equals(author)) {
 				throw new DuplicatedResourceException("L'autore esiste già");
 			}
 		}

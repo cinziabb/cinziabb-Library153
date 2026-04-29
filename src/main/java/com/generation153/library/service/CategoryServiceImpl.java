@@ -59,7 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
 		//		}
 
 		for(Category c : categoriesList) {
-			if(c == category) {
+			if(c.equals(category)) {
 				throw new DuplicatedResourceException("La categoria è già esistente");
 			}
 		}
