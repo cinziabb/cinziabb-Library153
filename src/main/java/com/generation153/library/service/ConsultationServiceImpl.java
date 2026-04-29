@@ -90,7 +90,13 @@ public class ConsultationServiceImpl implements ConsultationService {
 
 	@Override
 	public void deleteConsutationById(Integer id) {
-		// TODO Auto-generated method stub
+		if (id == null)
+			new NotFoundException("Id nullo");
+		
+		Consultation consultationUpdate = consultationRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Consultazione non trovata con id :" + id));
+		
+		consultationRepository.delete(consultationUpdate);
 
 	}
 
