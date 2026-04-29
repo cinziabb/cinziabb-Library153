@@ -27,7 +27,7 @@ public class Copy {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	@Column(nullable = false)
-	private boolean available;
+	private Boolean available;
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private EnumCopyStatus status;
