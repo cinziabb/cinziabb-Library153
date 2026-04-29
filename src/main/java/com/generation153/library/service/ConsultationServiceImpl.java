@@ -32,24 +32,27 @@ public class ConsultationServiceImpl implements ConsultationService {
 
 	@Override
 	public Consultation saveConsultation(Consultation consultation) {
-		if(consultation == null)
+		if (consultation == null)
 			new NotFoundException("Consultazione nulla");
-		if(consultationRepository.existsById(consultation.getId()))
+		if (consultationRepository.existsById(consultation.getId()))
 			new DuplicatedResourceException("Consultazione esistente con id: " + consultation.getId());
-		
+
 		User user = findUserInsideConsultation(consultation);
 		consultation.setUser(user);
-		
+
 		Copy copy = findCopyInsideConsultation(consultation);
 		consultation.setCopy(copy);
-		
+
 		return consultationRepository.save(consultation);
 	}
 
 	@Override
 	public Consultation findConsultationById(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		if (id == null)
+			new NotFoundException("Id nullo");
+
+		return consultationRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Consultazione non trovata con id :" + id));
 	}
 
 	@Override
