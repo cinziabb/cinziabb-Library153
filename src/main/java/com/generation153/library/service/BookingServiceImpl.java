@@ -9,7 +9,6 @@ import com.generation153.library.entity.Book;
 import com.generation153.library.entity.Booking;
 import com.generation153.library.entity.EnumBookingStatus;
 import com.generation153.library.entity.User;
-import com.generation153.library.exception.DuplicatedResourceException;
 import com.generation153.library.exception.NotFoundException;
 import com.generation153.library.repository.BookRepository;
 import com.generation153.library.repository.BookingRepository;
@@ -28,16 +27,19 @@ public class BookingServiceImpl implements BookingService {
 		this.userRepository = userRepository;
 		this.bookRepository = bookRepository;
 	}
+	
+	/*
+	*	Vincoli sulle prenotazioni
+		1) un utente può fare una sola prenotazione alla volta
+		2) un utente può fare più prenotazioni, ma più utenti non possono fare una prenotazione relativa 
+		   allo stesso libro
+	*/
 
 	@Override
 	public Booking saveBooking(Booking booking) {
 		
 		if (booking == null) {
 			throw new IllegalArgumentException("Prenotazione nulla");
-		}
-
-		if (bookingrepository.existsById(booking.getId())) {
-			throw new DuplicatedResourceException("Esistente con id: " + booking.getId());
 		}
 		
 		//cerca l'utente che fa la prenotazione e associalo
@@ -47,11 +49,15 @@ public class BookingServiceImpl implements BookingService {
 		//cerca il libro relativo alla prenotazione e associalo
 		Book book = findBookInsideBooking(booking);
 		booking.setBook(book);
+		
+		User buser = findUserInsideBooking(booking);
+
+		if (buser.isBlocked()) {
+		    throw new IllegalArgumentException("Utente bloccato: impossibile prenotare");
+		}
 		 
 		//salva la prenotazione
-		bookingrepository.save(booking);
-
-		return booking;
+		return bookingrepository.save(booking);
 	}
 	
 	@Override
@@ -61,10 +67,13 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	public Booking findBookingById(Integer id) {
+		
 		if (id == null) {
 			throw new IllegalArgumentException("Id nullo");
 		}
+		
 		Optional<Booking> optBooking = bookingrepository.findById(id);
+		
 		return optBooking
 				.orElseThrow(() -> new NotFoundException("Prenotazione non trovata con id: " + id));
 	}
@@ -121,7 +130,7 @@ public class BookingServiceImpl implements BookingService {
 		
 		//cerca la prenotazione da modificare
 		Booking updatedBooking = bookingrepository.findById(id)
-						  .orElseThrow(() -> new NotFoundException("prenotazione non trovata con id: " + id));
+				.orElseThrow(() -> new NotFoundException("prenotazione non trovata con id: " + id));
 		
 		// Modifica i campi solo se non sono nulli
 		
@@ -150,47 +159,67 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public List<Booking> findBookingsByUser(User user) {
-		if (user == null) {
-			throw new IllegalArgumentException("L'utente è nullo");
+	public List<Booking> findBookingsByUser(Integer id) {
+		
+		if (id == null) {
+			throw new IllegalArgumentException("id nullo");
 		}
-		List<Booking>bookings = bookingrepository.findByUser(user); 
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Utente non trovato con id: " + id));
+		
+		List<Booking> bookings = bookingrepository.findByUser(user); 
+		
 		if (bookings.isEmpty()) {
 			throw new NotFoundException("Prenotazione non trovata per questo utente");
+	
 		}
 		return bookings;
 	}
 	
 	@Override
-	public List<Booking> findBookingsByBook(Book book) {
-			if (book == null) {
-				throw new IllegalArgumentException("Questo libro è nullo");
-			}
-			List<Booking>bookings = bookingrepository.findByBook(book); 
-			if (bookings.isEmpty()) {
-				throw new NotFoundException("Prenotazione non trovata per questo libro");
-			}
-			return bookings;
-	}
-
-	@Override
-	public List<Booking> finBookingsByStatus(EnumBookingStatus status) {
-		if (status == null) {
-			throw new IllegalArgumentException("Stato nullo");
+	public List<Booking> findBookingsByBook(Integer id) {
+		
+		if (id == null) {
+			throw new IllegalArgumentException("id nullo");
 		}
-		List<Booking>bookings = bookingrepository.findByStatus(status); 
+			
+		Book book = bookRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Libro non trovato con id: " + id));
+			
+		List<Booking> bookings = bookingrepository.findByBook(book); 
+			
 		if (bookings.isEmpty()) {
-			throw new NotFoundException("Nessuna prenotazione trovata con stato " + status);
+			throw new NotFoundException("Prenotazione non trovata per questo libro");
 		}
+			
 		return bookings;
 	}
 
 	@Override
-	public void deleteBookingbyId(Integer id) {
+	public List<Booking> finBookingsByStatus(EnumBookingStatus status) {
+		
+		if (status == null) {
+			throw new IllegalArgumentException("Stato nullo");
+		}
+		
+		List<Booking> bookings = bookingrepository.findByStatus(status); 
+		
+		if (bookings.isEmpty()) {
+			throw new NotFoundException("Nessuna prenotazione trovata con stato " + status);
+		}
+		
+		return bookings;
+	}
+
+	@Override
+	public boolean deleteBookingbyId(Integer id) {
+		
 		if(id == null){
 			throw new IllegalArgumentException("Id nullo");
 		}
+		
 		bookingrepository.deleteById(id);
+		return true;
 	}
 		
 	//METODI PRIVATI
@@ -199,6 +228,7 @@ public class BookingServiceImpl implements BookingService {
 	*	trova l'utente in base all'id dell'utente contenuto nella prenotazione
 	*/
 	private User findUserInsideBooking(Booking booking) {
+		
 		return userRepository.findById(booking.getUser().getId())
 				.orElseThrow(() -> new NotFoundException("utente non trovato con id: " + booking.getUser().getId()));
 	}
@@ -209,7 +239,6 @@ public class BookingServiceImpl implements BookingService {
 	private Book findBookInsideBooking(Booking booking) {
 		return bookRepository.findById(booking.getBook().getId())
 				.orElseThrow(() -> new NotFoundException("libro non trovato con id: " + booking.getBook().getId()));
-		
 	}
 	
 }
