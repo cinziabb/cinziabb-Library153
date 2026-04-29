@@ -57,8 +57,35 @@ public class ConsultationServiceImpl implements ConsultationService {
 
 	@Override
 	public Consultation updateConsunltationById(Consultation consultation, Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		if (id == null)
+			new NotFoundException("Id nullo");
+		
+		if (consultation == null)
+			new NotFoundException("Consultazione nulla");
+		
+		Consultation consultationUpdate = consultationRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Consultazione non trovata con id :" + id));
+		
+		if(consultation.getInitDate() != null)
+			consultationUpdate.setInitDate(consultation.getInitDate());
+		
+		if(consultation.getInitTime() != null)
+			consultationUpdate.setInitTime(consultation.getInitTime());
+		
+		if(consultation.getEndTime().isAfter(consultation.getInitTime()))
+			consultationUpdate.setEndTime(consultation.getEndTime());
+		
+		if(consultation.getUser() != null) {
+			User user = findUserInsideConsultation(consultation);
+			consultationUpdate.setUser(user);
+		}
+		
+		if(consultation.getCopy() != null) {
+			Copy copy = findCopyInsideConsultation(consultation);
+			consultationUpdate.setCopy(copy);
+		}
+		
+		return consultationRepository.save(consultationUpdate);
 	}
 
 	@Override
