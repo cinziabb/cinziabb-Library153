@@ -2,11 +2,13 @@ package com.generation153.library.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.generation153.library.entity.Publisher;
 import com.generation153.library.exception.DuplicatedResourceException;
 import com.generation153.library.exception.NotFoundException;
 import com.generation153.library.repository.PublisherRepository;
-
+@Service
 public class PublisherServiceImpl implements PublisherService{
 	
 	private final PublisherRepository publisherRepository; 

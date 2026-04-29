@@ -4,12 +4,13 @@ package com.generation153.library.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
 
 import com.generation153.library.entity.Category;
 import com.generation153.library.exception.DuplicatedResourceException;
 import com.generation153.library.exception.NotFoundException;
 import com.generation153.library.repository.CategoryRepository;
-
+@Service
 public class CategoryServiceImpl implements CategoryService {
 
 	private final CategoryRepository categoryRepository;

@@ -3,12 +3,14 @@ package com.generation153.library.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
 import com.generation153.library.entity.Author;
 import com.generation153.library.exception.DuplicatedResourceException;
 import com.generation153.library.exception.NotFoundException;
 import com.generation153.library.repository.AuthorRepository;
 
-
+@Service
 public class AuthorServiceImpl implements AuthorService{
 
 	private final AuthorRepository authorRepository;
