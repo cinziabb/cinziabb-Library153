@@ -57,7 +57,7 @@ public class LoanServiceImpl implements LoanService {
         }
 
         // controllo che la copia sia disponibile
-        if (!copy.isAvailable()) {
+        if (!copy.getAvailable()) {
             throw new NotAvailableException("Copia non disponibile");
         }
 
