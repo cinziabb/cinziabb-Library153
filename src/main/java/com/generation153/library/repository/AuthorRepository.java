@@ -8,10 +8,19 @@ import com.generation153.library.entity.Author;
 
 public interface AuthorRepository extends JpaRepository<Author, Integer> {
 	
-	List<Author> findByFirstnameAndLastnameIgnoreCase(String firstNname, String lastName);
+
+	List<Author> findByFirstNameAndLastNameIgnoreCase(String firstName, String lastName);
 	
-	List<Author> findByLastnameIgnoreCase(String lastName);
+	List<Author> findByLastNameIgnoreCase(String lastName);
+	
+	List<Author> findByLastNameStartingWith(String lastName);
+	
+// <<<<<<< HEAD
+	// List<Author> findByLastnameIgnoreCase(String lastName);
 	
 	List<Author> findByLastnameStartingWith(String lastName); 
+// =======
+	
+// >>>>>>> refs/remotes/origin/develop
 	
 }
