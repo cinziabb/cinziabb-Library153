@@ -158,19 +158,16 @@ public class ConsultationServiceImpl implements ConsultationService {
 
 	@Override
 	public List<Consultation> findConsultationByUser(User user) {
-		// TODO Auto-generated method stub
-		return null;
+		return consultationRepository.findByUser(user);
 	}
 
 	@Override
 	public List<Consultation> findConsultationByCopy(Copy copy) {
-		// TODO Auto-generated method stub
-		return null;
+		return consultationRepository.findByCopy(copy);
 	}
 
 	@Override
 	public List<Consultation> findActiveConsultation() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
