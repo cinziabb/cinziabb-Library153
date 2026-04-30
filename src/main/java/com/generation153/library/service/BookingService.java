@@ -2,11 +2,9 @@ package com.generation153.library.service;
 
 import java.util.List;
 
+
 import com.generation153.library.entity.Booking;
 import com.generation153.library.entity.EnumBookingStatus;
-import com.generation153.library.entity.User;
-import com.generation153.library.entity.Book;
-
 
 public interface BookingService {
 	
@@ -51,20 +49,20 @@ public interface BookingService {
 	Booking updateBookingbyId(Booking booking, Integer id);		//PATCH
 	
 	/**
-	*	restituisce le prenotazioni di un utente
+	*	restituisce le prenotazioni di un utente in base all'id dell'utente
 	*	@param id
 	*	@return 
 	*	@throws 
 	*/
-	List<Booking> findBookingsByUser(User user);
+	List<Booking> findBookingsByUser(Integer id);
 	
 	/**
-	*	restituisce le prenotazioni relative ad un libro
-	*	@param book
+	*	restituisce le prenotazioni relative ad un libro in base all'id del libro
+	*	@param id
 	*	@return 
 	*	@throws 
 	*/
-	List<Booking> findBookingsByBook(Book book);
+	List<Booking> findBookingsByBook(Integer id);
 	
 	/**
 	*	restituisce le prenotazioni in base allo stato
@@ -80,5 +78,5 @@ public interface BookingService {
 	*	@return 
 	*	@throws 
 	*/
-	void deleteBookingbyId(Integer id);
+	boolean deleteBookingbyId(Integer id);
 }
