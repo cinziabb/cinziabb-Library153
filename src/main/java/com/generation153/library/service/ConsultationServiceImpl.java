@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
 import com.generation153.library.entity.Consultation;
 import com.generation153.library.entity.Copy;
 import com.generation153.library.entity.User;
@@ -62,32 +64,32 @@ public class ConsultationServiceImpl implements ConsultationService {
 	public Consultation updateConsunltationById(Consultation consultation, Integer id) {
 		if (id == null)
 			new NotFoundException("Id nullo");
-		
+
 		if (consultation == null)
 			new NotFoundException("Consultazione nulla");
-		
+
 		Consultation consultationUpdate = consultationRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Consultazione non trovata con id :" + id));
-		
-		if(consultation.getInitDate() != null)
+
+		if (consultation.getInitDate() != null)
 			consultationUpdate.setInitDate(consultation.getInitDate());
-		
-		if(consultation.getInitTime() != null)
+
+		if (consultation.getInitTime() != null)
 			consultationUpdate.setInitTime(consultation.getInitTime());
-		
-		if(consultation.getEndTime().isAfter(consultation.getInitTime()))
+
+		if (consultation.getEndTime().isAfter(consultation.getInitTime()))
 			consultationUpdate.setEndTime(consultation.getEndTime());
-		
-		if(consultation.getUser() != null) {
+
+		if (consultation.getUser() != null) {
 			User user = findUserInsideConsultation(consultation);
 			consultationUpdate.setUser(user);
 		}
-		
-		if(consultation.getCopy() != null) {
+
+		if (consultation.getCopy() != null) {
 			Copy copy = findCopyInsideConsultation(consultation);
 			consultationUpdate.setCopy(copy);
 		}
-		
+
 		return consultationRepository.save(consultationUpdate);
 	}
 
@@ -95,36 +97,45 @@ public class ConsultationServiceImpl implements ConsultationService {
 	public void deleteConsutationById(Integer id) {
 		if (id == null)
 			new NotFoundException("Id nullo");
-		
+
 		Consultation consultationUpdate = consultationRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Consultazione non trovata con id :" + id));
-		
+
 		consultationRepository.delete(consultationUpdate);
 
 	}
 
 	@Override
 	public Consultation startConsultation(Copy copy, User user) {
-		
-		if(copy == null)
+
+		if (copy == null)
 			new NotFoundException("Copia nulla");
-		
-		if(user == null)
+
+		if (user == null)
 			new NotFoundException("User nullo");
-		
-		copyService.isAvailableCopy(copy);
-		
+
+		Copy copyNew = copyRepository.findById(copy.getId())
+				.orElseThrow(() -> new NotFoundException("Copia non trovata con id :" + copy.getId()));
+
+		copyService.isAvailableCopy(copyNew);
+
 		Consultation consultation = new Consultation();
 		LocalDate date = LocalDate.now();
 		LocalTime initTime = LocalTime.now();
 		LocalTime endTime = null;
+
+		User userNew = userRepository.findById(user.getId())
+				.orElseThrow(() -> new NotFoundException("User non trovato con id:" + user.getId()));
 		
-		
-		
-		
-		copyService.markAsBorrowedCopy(copy);
-		
-		return null;
+		consultation.setInitDate(date);
+		consultation.setInitTime(initTime);
+		consultation.setEndTime(endTime);
+		consultation.setCopy(copyNew);
+		consultation.setUser(userNew);
+
+		copyService.markAsBorrowedCopy(copyNew);
+
+		return consultationRepository.save(consultation);
 	}
 
 	@Override
