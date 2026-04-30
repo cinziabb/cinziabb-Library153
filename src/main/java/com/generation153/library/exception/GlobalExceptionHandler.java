@@ -63,6 +63,11 @@ public class GlobalExceptionHandler {
         return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BadTimeException.class)
+    public ResponseEntity<ApiErrorDto> handleBadTime(BadTimeException ex) {
+        return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorDto> handleGeneric(Exception ex) {
         log.error("Errore interno del server", ex);
