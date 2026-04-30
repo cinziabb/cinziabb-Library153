@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import org.springframework.web.servlet.resource.NoResourceFoundException;
-
 import com.generation153.library.entity.Consultation;
 import com.generation153.library.entity.Copy;
 import com.generation153.library.entity.User;
@@ -152,7 +150,9 @@ public class ConsultationServiceImpl implements ConsultationService {
 		LocalTime endTime = LocalTime.now();
 		if(consultationNew.getInitTime().isAfter(endTime))
 			throw new BadTimeException("Tempo iniziale avviene dopo il tempo finale");
+		
 		consultationNew.setEndTime(endTime);
+		copyService.markAsAvailableCopy(consultationNew.getCopy());
 
 	}
 
