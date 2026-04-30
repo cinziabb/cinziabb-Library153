@@ -9,6 +9,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import com.generation153.library.entity.Consultation;
 import com.generation153.library.entity.Copy;
 import com.generation153.library.entity.User;
+import com.generation153.library.exception.BadTimeException;
 import com.generation153.library.exception.DuplicatedResourceException;
 import com.generation153.library.exception.NotFoundException;
 import com.generation153.library.repository.ConsultationRepository;
@@ -126,7 +127,7 @@ public class ConsultationServiceImpl implements ConsultationService {
 
 		User userNew = userRepository.findById(user.getId())
 				.orElseThrow(() -> new NotFoundException("User non trovato con id:" + user.getId()));
-		
+
 		consultation.setInitDate(date);
 		consultation.setInitTime(initTime);
 		consultation.setEndTime(endTime);
@@ -140,7 +141,18 @@ public class ConsultationServiceImpl implements ConsultationService {
 
 	@Override
 	public void endConsultation(Consultation consultation, Integer id) {
-		// TODO Auto-generated method stub
+		if (id == null)
+			new NotFoundException("Id nullo");
+		if (consultation == null)
+			new NotFoundException("Consultazione nulla");
+
+		Consultation consultationNew = consultationRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Consultazione non esistente con id: " + id));
+		
+		LocalTime endTime = LocalTime.now();
+		if(consultationNew.getInitTime().isAfter(endTime))
+			throw new BadTimeException("Tempo iniziale avviene dopo il tempo finale");
+		consultationNew.setEndTime(endTime);
 
 	}
 
