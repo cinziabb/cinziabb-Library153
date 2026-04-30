@@ -41,6 +41,7 @@ public class LoanServiceImpl implements LoanService {
         return loanRepository.findById(id).orElseThrow(() -> new NotFoundException("Nessun prestito con id: " + id));
     }
 
+    // TODO
     @Override
     public Loan saveLoan(Loan loan) {
         if (loan == null) {
@@ -49,7 +50,6 @@ public class LoanServiceImpl implements LoanService {
 
         // cerco la copia
         Copy copy = findCopyInsideLoan(loan);
-        loan.setCopy(copy);
 
         // controllo che il libro associato alla copia sia prestabile
         if (!isBookInsideCopyLendable(copy)) {
@@ -62,8 +62,17 @@ public class LoanServiceImpl implements LoanService {
         }
 
         User user = findUserInsideLoan(loan);
+
+        if (user.isBlocked()) {
+            throw new IllegalArgumentException("Utente bloccato");
+        }
+
+
+        copy.setAvailable(false);
+        loan.setCopy(copy);
         loan.setUser(user);
 
+        copyRepository.save(copy);
         return loanRepository.save(loan);
     }
 
