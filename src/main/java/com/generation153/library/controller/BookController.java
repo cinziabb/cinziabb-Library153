@@ -54,10 +54,9 @@ public class BookController {
 	@PostMapping("/admin/books")
 	public ResponseEntity<Book> createBook(@Valid @RequestBody BookCreateDTO dto) {
 		
-		// mapping dto --> entity
-		Book book = modelMapper.map(dto, Book.class);
+		// mapping (MANUALE) dto --> entity
+		Book book = bookService.mapToEntity(dto);
 		return new ResponseEntity<Book>(bookService.saveBook(book), HttpStatus.CREATED);
-		
 	}
 	
 	

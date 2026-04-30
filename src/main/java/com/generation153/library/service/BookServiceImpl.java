@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.generation153.library.dto.BookCreateDTO;
 import com.generation153.library.entity.Author;
 import com.generation153.library.entity.Book;
 import com.generation153.library.entity.Category;
@@ -75,7 +76,7 @@ public class BookServiceImpl implements BookService {
 		// Cerca la categoria 
 		Category category = findCategoryInsideBook(book);
 		book.setCategory(category);
-		
+
 		// Cerca l'editore
 		Publisher publisher = findPublisherInsideBook(book);
 		book.setPublisher(publisher);
@@ -123,7 +124,7 @@ public class BookServiceImpl implements BookService {
 		// Cerca la categoria 
 		Category category = findCategoryInsideBook(book);
 		replacedBook.setCategory(category);
-		
+
 		// Cerca l'editore
 		Publisher publisher = findPublisherInsideBook(book);
 		replacedBook.setPublisher(publisher);
@@ -187,10 +188,10 @@ public class BookServiceImpl implements BookService {
 			Category category = findCategoryInsideBook(book);
 			updatedBook.setCategory(category);
 		}
-		
+
 		if (book.getPublisher() != null) {
-		    Publisher publisher = findPublisherInsideBook(book);
-		    updatedBook.setPublisher(publisher);
+			Publisher publisher = findPublisherInsideBook(book);
+			updatedBook.setPublisher(publisher);
 		}
 
 		if (book.getAuthors() != null) {
@@ -247,7 +248,7 @@ public class BookServiceImpl implements BookService {
 		return categoryRepository.findById(book.getCategory().getId())
 				.orElseThrow(() -> new NotFoundException("categoria non trovata con id: " + book.getCategory().getId()));
 	}
-	
+
 	private Publisher findPublisherInsideBook(Book book) {
 		return publisherRepository.findById(book.getPublisher().getId())
 				.orElseThrow(() -> new NotFoundException("editore non trovato con id: " + book.getPublisher().getId()));
@@ -256,6 +257,53 @@ public class BookServiceImpl implements BookService {
 	private Author findAuthorInsideBook(Author author) {
 		return authorRepository.findById(author.getId())
 				.orElseThrow(() -> new NotFoundException("autore non trovato con id: " + author.getId()));
+	}
+
+	@Override
+	public BookCreateDTO mapToDTO(Book book) {
+		BookCreateDTO dto = new BookCreateDTO();
+
+		dto.setIsbn(book.getIsbn());
+		dto.setTitle(book.getTitle());
+		dto.setLanguage(book.getLanguage());
+		dto.setImageUri(book.getImageUri());
+		dto.setEdition(book.getEdition());
+		dto.setLendable(book.getLendable());
+		dto.setPublisherId(book.getPublisher().getId());
+		dto.setCategoryId(book.getCategory().getId());
+		dto.setAuthorsId(
+				book.getAuthors().stream()
+				.map(author -> author.getId())
+				.toList()
+				);
+		return dto;
+	}
+
+	@Override
+	public Book mapToEntity(BookCreateDTO dto) {
+		Book book = new Book();
+
+		book.setTitle(dto.getTitle());
+		book.setIsbn(dto.getIsbn());
+		book.setLanguage((dto.getLanguage()));
+		book.setImageUri(dto.getImageUri());
+		book.setEdition(dto.getEdition());
+		book.setLendable(dto.getLendable());
+		book.setPublisher(
+				publisherRepository.findById(dto.getPublisherId())
+				.orElseThrow(() -> new RuntimeException("Publisher non trovato"))
+				);
+
+		book.setCategory(
+				categoryRepository.findById(dto.getCategoryId())
+				.orElseThrow(() -> new RuntimeException("Categoria non trovata"))
+				);
+
+		book.setAuthors(
+				new HashSet<>(authorRepository.findAllById(dto.getAuthorsId()))
+				);
+
+		return book;
 	}
 
 }
