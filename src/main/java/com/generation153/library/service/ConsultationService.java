@@ -6,11 +6,6 @@ import com.generation153.library.entity.Consultation;
 import com.generation153.library.entity.Copy;
 import com.generation153.library.entity.User;
 
-//vedere quali libri sono attualmente disponibili
-//vedere quali libri sono più richiesti o più prestati
-//visualizzare i libri attualmente in prestito
-//visualizzare i prestiti effettuati da uno specifico utente
-
 
 public interface ConsultationService {
 	
@@ -22,5 +17,13 @@ public interface ConsultationService {
 	
 	Consultation startConsultation(Copy copy, User user);
 	void endConsultation(Consultation consultation, Integer id);
+	
+	List<Consultation> findConsultationByUser(User user);
+	List<Consultation> findConsultationByCopy(Copy copy);
+	List<Consultation> findActiveConsultation();
+	List<Consultation> findCompletedConsultation();
+	
+	List<Object[]> findMostWantedBook();
+	List<Object> findBorrowedBook();
 	
 }

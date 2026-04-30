@@ -10,5 +10,9 @@ public interface CategoryRepository extends JpaRepository<Category, Integer>{
 	
 	List<Category>findByName(String name);
 	List<Category>findByNameStartingWith(String name);
-
+//<<<<<<< HEAD
 }
+//=======
+
+//}
+//>>>>>>> refs/remotes/origin/develop

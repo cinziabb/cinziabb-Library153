@@ -78,8 +78,13 @@ public class BookingController {
 		
 		//La risposta HTTP sarà 204 no content
 		@DeleteMapping("/{id}")
-		public boolean deleteBooking(@PathVariable Integer id) {
-			return bookingService.deleteBookingbyId(id);
+//<<<<<<< HEAD
+//		public boolean deleteBooking(@PathVariable Integer id) {
+//			return bookingService.deleteBookingbyId(id);
+//=======
+		public void deleteBooking(@PathVariable Integer id) {
+			 bookingService.deleteBookingbyId(id);
+//>>>>>>> refs/remotes/origin/publisher-category-author
 		}
 		
 }
