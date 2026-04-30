@@ -1,5 +1,7 @@
 package com.generation153.library.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import com.generation153.library.entity.Consultation;
@@ -113,6 +115,11 @@ public class ConsultationServiceImpl implements ConsultationService {
 		copyService.isAvailableCopy(copy);
 		
 		Consultation consultation = new Consultation();
+		LocalDate date = LocalDate.now();
+		LocalTime initTime = LocalTime.now();
+		LocalTime endTime = null;
+		
+		
 		
 		
 		copyService.markAsBorrowedCopy(copy);
