@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.generation153.library.entity.Book;
 import com.generation153.library.entity.Booking;
-import com.generation153.library.entity.User;
+import com.generation153.library.entity.EnumBookingStatus;
 import com.generation153.library.service.BookingService;
 
 
@@ -42,15 +41,22 @@ public class BookingController {
 		}
 		
 		// API: GET + http://localhost:8080/api/v1/bookings/user/1
-				@GetMapping("/user/{userId}")
-				public List<Booking>getBookingsByUser(@PathVariable User user) {
-					return bookingService.findBookingsByUser(user);
-				}
+		@GetMapping("/user/{userId}")
+		public List<Booking> getBookingsByUser(@PathVariable Integer id) {
+			return bookingService.findBookingsByUser(id);
+		}
+		
 		// API: GET + http://localhost:8080/api/v1/bookings/book/1
-				@GetMapping("/book/{bookId}")
-				public List<Booking>getBookingsByBook(@PathVariable Book book) {
-					return bookingService.findBookingsByBook(book);
-				}
+		@GetMapping("/book/{bookId}")
+		public List<Booking> getBookingsByBook(@PathVariable Integer id) {
+			return bookingService.findBookingsByBook(id);
+		}
+		
+		// API: GET + http://localhost:8080/api/v1/bookings/status
+		@GetMapping("/status{status}")
+		public List<Booking> getBookingsByStatus(@PathVariable EnumBookingStatus status) {
+			return bookingService.finBookingsByStatus(status);
+		}
 		
 		// PUT
 		@PutMapping("/{id}")
@@ -63,6 +69,7 @@ public class BookingController {
 		public Booking updateBookingById(@RequestBody Booking booking, @PathVariable Integer id) {
 			return bookingService.updateBookingbyId(booking, id);
 		}
+		
 		// API: POST + http://localhost:8080/api/v1/bookings
 		@PostMapping()
 		public Booking saveBooking(@RequestBody Booking booking) {
@@ -71,8 +78,13 @@ public class BookingController {
 		
 		//La risposta HTTP sarà 204 no content
 		@DeleteMapping("/{id}")
+//<<<<<<< HEAD
+//		public boolean deleteBooking(@PathVariable Integer id) {
+//			return bookingService.deleteBookingbyId(id);
+//=======
 		public void deleteBooking(@PathVariable Integer id) {
-			return bookingService.deleteBookingbyId(id);
+			 bookingService.deleteBookingbyId(id);
+//>>>>>>> refs/remotes/origin/publisher-category-author
 		}
 		
 }
