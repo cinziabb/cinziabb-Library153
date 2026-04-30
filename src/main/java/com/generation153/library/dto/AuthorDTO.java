@@ -1,5 +1,7 @@
 package com.generation153.library.dto;
 
+
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +12,7 @@ import lombok.Setter;
 public class AuthorDTO {
 	
 	private Integer id;
+	
 	private String firstName;
 	private String lastName;
 
