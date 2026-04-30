@@ -16,7 +16,7 @@ public interface AuthorRepository extends JpaRepository<Author, Integer> {
 	List<Author> findByLastNameStartingWith(String lastName);
 	
 // <<<<<<< HEAD
-	 List<Author> findByLastnameIgnoreCase(String lastName);
+//	 List<Author> findByLastameIgnoreCase(String lastName);
 	
 //	List<Author> findByLastnameStartingWith(String lastName); 
 // =======
