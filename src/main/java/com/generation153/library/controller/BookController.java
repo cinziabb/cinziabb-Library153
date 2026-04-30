@@ -13,7 +13,7 @@ import com.generation153.library.entity.Book;
 import com.generation153.library.service.BookService;
 
 @RestController
-@RequestMapping("/api/v1/books")
+@RequestMapping("/api/v1")
 public class BookController {
 
 	// Dependency injection
@@ -24,7 +24,7 @@ public class BookController {
 	}
 
 	// API: GET + http://localhost:8080/api/v1/books 
-	@GetMapping()
+	@GetMapping("/public/books")
 	public ResponseEntity<List<Book>> getAllBooks() {
 		return new ResponseEntity<>(bookService.findAllBooks(), HttpStatus.OK);
 	}
@@ -36,7 +36,7 @@ public class BookController {
 //	}
 
 	// API: GET + http://localhost:8080/api/v1/books/1 
-	@GetMapping("/{id}")
+	@GetMapping("/admin/books/{id}")
 	public ResponseEntity<Book> getBookById(@PathVariable Integer id) {
 		return new ResponseEntity<>(bookService.findBookById(id), HttpStatus.OK);
 	}
