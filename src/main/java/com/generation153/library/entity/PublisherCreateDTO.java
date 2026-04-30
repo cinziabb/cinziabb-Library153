@@ -1,4 +1,4 @@
-package com.generation153.library.dto;
+package com.generation153.library.entity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -11,12 +11,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryCreateDTO {
+public class PublisherCreateDTO {
 	
-	
-	@NotBlank(message = "Nome categoria nullo o vuoto!")
+	@NotBlank(message = "Nome editore nullo o vuoto")
 	@Size(max = 100)
 	private String name;
-	
 
 }
