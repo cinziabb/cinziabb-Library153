@@ -1,15 +1,20 @@
 package com.generation153.library.service;
 
 
-import java.util.List;
+//<<<<<<< HEAD
+import java.util.List;  
+//=======
+//import java.util.List;
+//>>>>>>> refs/remotes/origin/develop
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
 
 import com.generation153.library.entity.Category;
 import com.generation153.library.exception.DuplicatedResourceException;
 import com.generation153.library.exception.NotFoundException;
 import com.generation153.library.repository.CategoryRepository;
-
+@Service
 public class CategoryServiceImpl implements CategoryService {
 
 	private final CategoryRepository categoryRepository;
@@ -54,7 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
 		//		}
 
 		for(Category c : categoriesList) {
-			if(c == category) {
+			if(c.equals(category)) {
 				throw new DuplicatedResourceException("La categoria è già esistente");
 			}
 		}
