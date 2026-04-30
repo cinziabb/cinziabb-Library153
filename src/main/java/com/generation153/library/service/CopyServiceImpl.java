@@ -45,6 +45,9 @@ public class CopyServiceImpl implements CopyService {
 		
 		if(copyRepository.findById(copy.getId()).isPresent())
 			new NotFoundException("id della copia già esistente");
+		
+		Book book = findBookInsideCopy(copy);
+		copy.setBook(book);
 
 		return copyRepository.save(copy);
 	}

@@ -11,5 +11,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	Optional<List<User>> findByFirstName(String firstName);
 	Optional<List<User>> findByLastName(String lastName);
+	
+	//Rispetta la naming convention di SpringBoot
 	Optional<List<User>> findByFirstNameAndLastName(String firstName, String lastName);
+	boolean existsByEmail(String email);
+	boolean existsByEmailAndIdNot(String email, Integer id);
+	
 }

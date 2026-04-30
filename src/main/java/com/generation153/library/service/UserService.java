@@ -19,8 +19,16 @@ public interface UserService {
 	/**
 	*
 	*/
-	List<User> findUserByName(String name);
+	List<User> findUserByFirstName(String firstName);
 	
+	/**
+	*
+	*/
+	List<User> findUserByLastName(String lastName);
+	/**
+	*
+	*/
+	List<User> findUserByFullName(String firstName, String lastName);
 	/**
 	*
 	*/
@@ -37,9 +45,21 @@ public interface UserService {
 	User replaceUserById(User user, Integer id);	//PUT
 	
 	/**
+	 * @return 
 	*
 	*/
-	void deleteUserById(Integer id);
+	boolean deleteUserById(Integer id);
+	
+	//gestione utenti in base ai ritardi
+
+	User blockUser(Integer userId);
+	
+	User unblockUser(Integer userId);
+	
+	
+	
+
+	
 	
 	
 	
