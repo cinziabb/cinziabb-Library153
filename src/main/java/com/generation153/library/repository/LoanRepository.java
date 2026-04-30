@@ -12,5 +12,7 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
 
     List<Loan> findByStatus(EnumLoanStatus status);
 
+    List<Loan> findByStatusAndUserId(EnumLoanStatus status, Integer id);
+
     List<Loan> findByUserId(Integer id);
 }
