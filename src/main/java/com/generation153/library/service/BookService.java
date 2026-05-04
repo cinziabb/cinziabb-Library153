@@ -36,9 +36,9 @@ public interface BookService {
 	Book mapToEntity(BookUpdateDTO dto);
 	
 	// Mapping Book --> BookResponseDTO
-	public BookResponseDTO mapToResponseDTO(Book book);
+	BookResponseDTO mapToResponseDTO(Book book);
 	
 	// Mapping List<Book> --> List<BookResponseDTO>
-	public List<BookResponseDTO> mapToListResponseDTO(List<Book> books);
+	List<BookResponseDTO> mapToListResponseDTO(List<Book> books);
 	
 }
