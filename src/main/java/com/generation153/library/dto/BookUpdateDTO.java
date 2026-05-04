@@ -1,7 +1,5 @@
 package com.generation153.library.dto;
 
-
-
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -15,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookResponseDTO {
+public class BookUpdateDTO {
 
 	private String isbn;
 	private String title;
@@ -24,8 +22,8 @@ public class BookResponseDTO {
 	private Integer edition;
 	private Boolean lendable;
 	
-	private String publisherName;
-	private String categoryName;
-	private List<String> authorsName;
+	private Integer publisherId;
+	private Integer categoryId;
+	private List<Integer> authorsId;
 	
 }

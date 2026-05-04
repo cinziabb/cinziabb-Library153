@@ -1,19 +1,21 @@
 package com.generation153.library.service;
 
 import com.generation153.library.entity.*;
-import com.generation153.library.exception.NotAvailableException;
-import com.generation153.library.exception.NotFoundException;
-import com.generation153.library.exception.NotLendableException;
+import com.generation153.library.exception.*;
 import com.generation153.library.repository.BookRepository;
 import com.generation153.library.repository.CopyRepository;
 import com.generation153.library.repository.LoanRepository;
 import com.generation153.library.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Service
 public class LoanServiceImpl implements LoanService {
     private static final int LOAN_DURATION_DAYS = 7;
+    private static final int MAX_LOAN_PER_USER = 3;
 
     private final LoanRepository loanRepository;
     private final UserRepository userRepository;
@@ -41,7 +43,7 @@ public class LoanServiceImpl implements LoanService {
         return loanRepository.findById(id).orElseThrow(() -> new NotFoundException("Nessun prestito con id: " + id));
     }
 
-    // TODO
+    @Transactional
     @Override
     public Loan saveLoan(Loan loan) {
         if (loan == null) {
@@ -63,16 +65,33 @@ public class LoanServiceImpl implements LoanService {
 
         User user = findUserInsideLoan(loan);
 
+        // verifico se l'utente è bloccato
         if (user.isBlocked()) {
-            throw new IllegalArgumentException("Utente bloccato");
+            throw new UserBlockedException("Utente bloccato");
         }
 
+        // conto i prestiti attivi dell'utente
+        int numPrestiti = loanRepository.findByStatusAndUserId(EnumLoanStatus.ACTIVE, user.getId()).size();
+
+        if (numPrestiti == MAX_LOAN_PER_USER) {
+            throw new MaxLoansReachedException("L'utente ha raggiunto il numero di prestiti massimo");
+        }
 
         copy.setAvailable(false);
         loan.setCopy(copy);
         loan.setUser(user);
 
         copyRepository.save(copy);
+
+        // imposto il prestito su active
+        loan.setStatus(EnumLoanStatus.ACTIVE);
+
+        // imposto la data di avvenuto prestito
+        loan.setDate(LocalDate.now());
+
+        // calcolo la data di ritorno prevista
+        loan.setExpReturnDate(loan.getDate().plusDays(LOAN_DURATION_DAYS));
+
         return loanRepository.save(loan);
     }
 
@@ -102,6 +121,7 @@ public class LoanServiceImpl implements LoanService {
         return loanRepository.save(replacedLoan);
     }
 
+    @Transactional
     @Override
     public Loan updateLoanById(Loan loan, Integer id) {
         if (loan == null) {
@@ -120,23 +140,24 @@ public class LoanServiceImpl implements LoanService {
             savedLoan.setExpReturnDate(loan.getDate().plusDays(LOAN_DURATION_DAYS));
         }
 
-        if (loan.getReturnDate() != null && loan.getReturnDate().isBefore(savedLoan.getDate())) {
-            throw new IllegalArgumentException("La data di ritorno deve essere dopo quella di inizio prestito");
-        }
+        if (loan.getReturnDate() != null) {
+            if (loan.getReturnDate().isBefore(savedLoan.getDate())) {
+                throw new IllegalArgumentException("La data di ritorno deve essere dopo quella di inizio prestito");
+            }
 
-        if (loan.getReturnDate() != null && loan.getReturnDate().isAfter(savedLoan.getDate())) {
             savedLoan.setReturnDate(loan.getReturnDate());
 
-            // aggiorno lo stato del prestito
+            // determino se il reso è in ritardo
             if (savedLoan.getExpReturnDate() != null && loan.getReturnDate().isAfter(savedLoan.getExpReturnDate())) {
                 savedLoan.setStatus(EnumLoanStatus.LATE);
             } else {
                 savedLoan.setStatus(EnumLoanStatus.RETURNED);
             }
 
-            // rendo la copia disponibile dopo il ritorno
-            Copy copy = findCopyInsideLoan(savedLoan);
+            // rendo la copia disponibile
+            Copy copy = savedLoan.getCopy();
             copy.setAvailable(true);
+            copyRepository.save(copy);
         }
 
         if (loan.getUser() != null) {
@@ -144,7 +165,7 @@ public class LoanServiceImpl implements LoanService {
             savedLoan.setUser(user);
         }
 
-        if (loan.getCopy() != null) {
+        if (loan.getCopy() != null && savedLoan.getReturnDate() == null) {
             Copy copy = findCopyInsideLoan(loan);
             savedLoan.setCopy(copy);
         }

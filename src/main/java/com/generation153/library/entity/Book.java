@@ -15,6 +15,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -77,6 +78,19 @@ public class Book {
 		return Objects.equals(isbn, other.isbn);
 	}
 	
-	
-	
+	// Metodi helper
+	public void addAuthor(Author author) {
+	    if (author == null) {
+	    	throw new IllegalArgumentException("autore nullo");
+	    }
+	    this.authors.add(author);
+	}
+
+	public void removeAuthor(Author author) {
+	    if (author == null) {
+	    	throw new IllegalArgumentException("autore nullo");
+	    }
+	    this.authors.remove(author);
+	}
+
 }

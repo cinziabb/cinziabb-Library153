@@ -1,18 +1,16 @@
 package com.generation153.library.exception;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.generation153.library.dto.ApiErrorDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.generation153.library.dto.ApiErrorDto;
-
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -38,6 +36,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UserBlockedException.class)
+    public ResponseEntity<ApiErrorDto> handleMaxLoans(UserBlockedException ex) {
+        return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MaxLoansReachedException.class)
+    public ResponseEntity<ApiErrorDto> handleMaxLoans(MaxLoansReachedException ex) {
+        return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiErrorDto> handleBadRequest(BadRequestException ex) {
         return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -47,7 +55,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorDto> handleNotFound(ResourceNotFoundException ex) {
         return buildError(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
-    
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiErrorDto> handleNotFound(NotFoundException ex) {
         return buildError(ex.getMessage(), HttpStatus.NOT_FOUND);
@@ -57,7 +65,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorDto> handleDuplicate(DuplicatedResourceException ex) {
         return buildError(ex.getMessage(), HttpStatus.CONFLICT);
     }
-    
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiErrorDto> handleIllegalArgument(IllegalArgumentException ex) {
         return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);

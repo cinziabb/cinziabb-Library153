@@ -1,13 +1,15 @@
 package com.generation153.library.service;
 
 import java.util.HashSet;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.generation153.library.dto.BookCreateDTO;
+import com.generation153.library.dto.BookResponseDTO;
+import com.generation153.library.dto.BookUpdateDTO;
 import com.generation153.library.entity.Author;
 import com.generation153.library.entity.Book;
 import com.generation153.library.entity.Category;
@@ -19,7 +21,7 @@ import com.generation153.library.repository.BookRepository;
 import com.generation153.library.repository.CategoryRepository;
 import com.generation153.library.repository.PublisherRepository;
 
-import com.generation153.library.service.BookService;
+import jakarta.transaction.Transactional;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -56,11 +58,21 @@ public class BookServiceImpl implements BookService {
 		return optBook
 				.orElseThrow(() -> new NotFoundException("libro non trovato con id: " + id));
 	}
+	
+	@Override
+	public Book findBookByIsbn(String isbn) {
+		if (isbn == null || isbn.isBlank()) {
+			throw new IllegalArgumentException("isbn nullo o vuoto");
+		}
+		return bookRepository.findByIsbn(isbn)
+				.orElseThrow(() -> new NotFoundException("Libro non trovato con isbn: " + isbn));
+	}
 
 	/*
 	 * Il parametro Book è già stato validato nel controller.
 	 * Degli autori e della categoria contiene solo gli id.
 	 */
+	@Transactional
 	@Override
 	public Book saveBook(Book book) {
 
@@ -75,7 +87,7 @@ public class BookServiceImpl implements BookService {
 		// Cerca la categoria 
 		Category category = findCategoryInsideBook(book);
 		book.setCategory(category);
-		
+
 		// Cerca l'editore
 		Publisher publisher = findPublisherInsideBook(book);
 		book.setPublisher(publisher);
@@ -93,6 +105,7 @@ public class BookServiceImpl implements BookService {
 		return bookRepository.save(book);
 	}
 
+	@Transactional
 	@Override
 	public Book replaceBookById(Book book, Integer id) { // Book non ha campi nulli, ad eccezione dell'id
 
@@ -123,7 +136,7 @@ public class BookServiceImpl implements BookService {
 		// Cerca la categoria 
 		Category category = findCategoryInsideBook(book);
 		replacedBook.setCategory(category);
-		
+
 		// Cerca l'editore
 		Publisher publisher = findPublisherInsideBook(book);
 		replacedBook.setPublisher(publisher);
@@ -140,6 +153,7 @@ public class BookServiceImpl implements BookService {
 		return bookRepository.save(replacedBook);
 	}
 
+	@Transactional
 	@Override
 	public Book updateBookById(Book book, Integer id) { // Book può avere campi nulli
 
@@ -187,10 +201,10 @@ public class BookServiceImpl implements BookService {
 			Category category = findCategoryInsideBook(book);
 			updatedBook.setCategory(category);
 		}
-		
+
 		if (book.getPublisher() != null) {
-		    Publisher publisher = findPublisherInsideBook(book);
-		    updatedBook.setPublisher(publisher);
+			Publisher publisher = findPublisherInsideBook(book);
+			updatedBook.setPublisher(publisher);
 		}
 
 		if (book.getAuthors() != null) {
@@ -207,7 +221,8 @@ public class BookServiceImpl implements BookService {
 		return bookRepository.save(updatedBook);
 
 	}
-
+	
+	@Transactional
 	@Override
 	public void deleteBookById(Integer id) {
 		if (id == null) {
@@ -216,6 +231,7 @@ public class BookServiceImpl implements BookService {
 		Book book = bookRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("libro non trovato con id: " + id));
 
+		book.getAuthors().clear(); //Importante!!!!
 		bookRepository.delete(book);
 	}
 
@@ -224,11 +240,11 @@ public class BookServiceImpl implements BookService {
 		if (title == null) {
 			throw new IllegalArgumentException("title nullo");
 		}
-		return bookRepository.findByTitleContainingIgnoreCase(title); // MODIFICATO
+		return bookRepository.findByTitleContainingIgnoreCase(title); 
 	}
 
 	@Override
-	public List<Book> findBooksByAuthor(Author author) {
+	public List<Book> findBooksByAuthorId(Author author) {
 		if (author == null || author.getId() == null) {
 			throw new IllegalArgumentException("autore nullo o senza id");
 		}
@@ -236,18 +252,41 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public List<Book> findBooksByCategory(Category category) {
+	public List<Book> findBooksByCategoryId(Category category) {
 		if (category == null || category.getId() == null) {
 			throw new IllegalArgumentException("categoria nulla o senza id");
 		}
 		return bookRepository.findByCategoryId(category.getId());
+	}
+	
+	@Override
+	public List<Book> findBooksByPublisherId(Publisher publisher) {
+		if (publisher == null || publisher.getId() == null) {
+			throw new IllegalArgumentException("editore nullo o senza id");
+		}
+		return bookRepository.findByPublisherId(publisher.getId());
+	}
+	
+	@Override
+	public List<Book> findBooksByAuthorName(String firstName, String lastName) {
+		 return bookRepository.findBooksByAuthorName(firstName, lastName);
+	}
+	
+	@Override
+	public List<Book> findBooksByCategoryName(String name) {
+			return bookRepository.findByCategoryNameContainingIgnoreCase(name);
+	}
+	
+	@Override
+	public List<Book> findBooksByPublisherName(String name) {
+		return bookRepository.findByPublisherNameContainingIgnoreCase(name);
 	}
 
 	private Category findCategoryInsideBook(Book book) {
 		return categoryRepository.findById(book.getCategory().getId())
 				.orElseThrow(() -> new NotFoundException("categoria non trovata con id: " + book.getCategory().getId()));
 	}
-	
+
 	private Publisher findPublisherInsideBook(Book book) {
 		return publisherRepository.findById(book.getPublisher().getId())
 				.orElseThrow(() -> new NotFoundException("editore non trovato con id: " + book.getPublisher().getId()));
@@ -256,6 +295,94 @@ public class BookServiceImpl implements BookService {
 	private Author findAuthorInsideBook(Author author) {
 		return authorRepository.findById(author.getId())
 				.orElseThrow(() -> new NotFoundException("autore non trovato con id: " + author.getId()));
+	}
+
+
+	@Override
+	public Book mapToEntity(BookCreateDTO dto) {
+		Book book = new Book();
+
+		book.setTitle(dto.getTitle());
+		book.setIsbn(dto.getIsbn());
+		book.setLanguage((dto.getLanguage()));
+		book.setImageUri(dto.getImageUri());
+		book.setEdition(dto.getEdition());
+		book.setLendable(dto.getLendable());
+		book.setPublisher(
+				publisherRepository.findById(dto.getPublisherId())
+				.orElseThrow(() -> new RuntimeException("Publisher non trovato"))
+				);
+
+		book.setCategory(
+				categoryRepository.findById(dto.getCategoryId())
+				.orElseThrow(() -> new RuntimeException("Categoria non trovata"))
+				);
+
+		book.setAuthors(
+				new HashSet<>(authorRepository.findAllById(dto.getAuthorsId()))
+				);
+
+		return book;
+	}
+
+	@Override
+	public Book mapToEntity(BookUpdateDTO dto) {
+		Book book = new Book();
+
+		book.setTitle(dto.getTitle());
+		book.setIsbn(dto.getIsbn());
+		book.setLanguage((dto.getLanguage()));
+		book.setImageUri(dto.getImageUri());
+		book.setEdition(dto.getEdition());
+		book.setLendable(dto.getLendable());
+		if (dto.getPublisherId() != null) {
+			book.setPublisher(
+					publisherRepository.findById(dto.getPublisherId())
+					.orElseThrow(() -> new RuntimeException("Publisher non trovato"))
+					);
+		}
+		if (dto.getCategoryId() != null) {
+			book.setCategory(
+					categoryRepository.findById(dto.getCategoryId())
+					.orElseThrow(() -> new RuntimeException("Categoria non trovata"))
+					);
+		}
+
+		if (dto.getAuthorsId() != null && !dto.getAuthorsId().isEmpty()) {
+			book.setAuthors(
+					new HashSet<>(authorRepository.findAllById(dto.getAuthorsId()))
+					);
+		}
+
+		return book;
+	}
+
+	@Override
+	public BookResponseDTO mapToResponseDTO(Book book) {
+		BookResponseDTO dto = new BookResponseDTO();
+
+		dto.setIsbn(book.getIsbn());
+		dto.setTitle(book.getTitle());
+		dto.setLanguage(book.getLanguage());
+		dto.setImageUri(book.getImageUri());
+		dto.setEdition(book.getEdition());
+		dto.setLendable(book.getLendable());
+		dto.setPublisherName(book.getPublisher().getName());
+		dto.setCategoryName(book.getCategory().getName());
+		dto.setAuthorsName(
+				book.getAuthors().stream()
+				.map(author -> author.getFirstName() + " " + author.getLastName())
+				.toList()
+				);
+		return dto;
+	}
+
+	public List<BookResponseDTO> mapToListResponseDTO(List<Book> books) {
+		return books.stream()
+				.map(book -> mapToResponseDTO(book))
+				.toList();
+
+
 	}
 
 }
