@@ -1,5 +1,8 @@
 package com.generation153.library.service;
 
+import com.generation153.library.dto.LoanCreateDTO;
+import com.generation153.library.dto.LoanResponseDTO;
+import com.generation153.library.dto.LoanUpdateDTO;
 import com.generation153.library.entity.*;
 import com.generation153.library.exception.*;
 import com.generation153.library.repository.BookRepository;
@@ -54,7 +57,8 @@ public class LoanServiceImpl implements LoanService {
         Copy copy = findCopyInsideLoan(loan);
 
         // controllo che il libro associato alla copia sia prestabile
-        if (!isBookInsideCopyLendable(copy)) {
+        Book book = findBookInsideCopy(copy);
+        if (!book.getLendable()) {
             throw new NotLendableException("Libro non prestabile");
         }
 
@@ -96,6 +100,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    @Transactional
     public Loan replaceLoanById(Loan loan, Integer id) {
         if (loan == null) {
             throw new IllegalArgumentException("Prestito nullo");
@@ -105,7 +110,7 @@ public class LoanServiceImpl implements LoanService {
             throw new IllegalArgumentException("Id nullo");
         }
 
-        Loan replacedLoan = loanRepository.findById(id).orElseThrow(() -> new NotFoundException("Prestito non trovato"));
+        Loan replacedLoan = loanRepository.findById(id).orElseThrow(() -> new NotFoundException("Prestito non trovato con id" + id));
 
         replacedLoan.setDate(loan.getDate());
         replacedLoan.setExpReturnDate(loan.getExpReturnDate());
@@ -174,12 +179,18 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    @Transactional
     public void deleteLoanById(Integer id) {
         if (id == null) {
             throw new IllegalArgumentException("Id nullo");
         }
 
         Loan loan = loanRepository.findById(id).orElseThrow(() -> new NotFoundException("Prestito non trovato con id: " + id));
+
+        // se elimino il prestito la copia torna disponibile
+        Copy copy = findCopyInsideLoan(loan);
+        copy.setAvailable(true);
+        copyRepository.save(copy);
 
         loanRepository.delete(loan);
     }
@@ -203,6 +214,54 @@ public class LoanServiceImpl implements LoanService {
         return loanRepository.findByUserId(user.getId());
     }
 
+    @Override
+    public Loan mapToEntity(LoanCreateDTO dto) {
+        Loan loan = new Loan();
+
+        loan.setUser(userRepository.findById(dto.getUserId()).orElseThrow(() -> new NotFoundException("Utente non trovato con id: " + dto.getUserId())));
+
+        loan.setCopy(copyRepository.findById(dto.getCopyId()).orElseThrow(() -> new NotFoundException("Copia non trovata con id: " + dto.getCopyId())));
+
+        return loan;
+    }
+
+    @Override
+    public Loan mapToEntity(LoanUpdateDTO dto) {
+        Loan loan = new Loan();
+
+        loan.setDate(dto.getDate());
+        loan.setReturnDate(dto.getReturnDate());
+        if (dto.getCopyId() != null) {
+            loan.setCopy(copyRepository.findById(dto.getCopyId()).orElseThrow(() -> new NotFoundException("Copia non trovata con id: " + dto.getCopyId())));
+        }
+
+        if (dto.getUserId() != null) {
+            loan.setUser(userRepository.findById(dto.getUserId()).orElseThrow(() -> new NotFoundException("Utente non trovato con id: " + dto.getUserId())));
+        }
+
+        return loan;
+    }
+
+    @Override
+    public LoanResponseDTO mapToResponseDTO(Loan loan) {
+        LoanResponseDTO dto = new LoanResponseDTO();
+
+        dto.setId(loan.getId());
+        dto.setDate(loan.getDate());
+        dto.setExpReturnDate(loan.getExpReturnDate());
+        dto.setReturnDate(loan.getReturnDate());
+        dto.setStatus(loan.getStatus());
+        dto.setCopyId(loan.getCopy().getId());
+        dto.setBookTitle(loan.getCopy().getBook().getTitle());
+        dto.setUserId(loan.getUser().getId());
+        return dto;
+    }
+
+    @Override
+    public List<LoanResponseDTO> mapToListResponseDTO(List<Loan> loans) {
+        return loans.stream().map(this::mapToResponseDTO).toList();
+    }
+
     private User findUserInsideLoan(Loan loan) {
         return userRepository.findById(loan.getUser().getId()).orElseThrow(() -> new NotFoundException("Utente non trovato con id: " + loan.getUser().getId()));
     }
@@ -211,8 +270,7 @@ public class LoanServiceImpl implements LoanService {
         return copyRepository.findById(loan.getCopy().getId()).orElseThrow(() -> new NotFoundException("Copia non trovata con id: " + loan.getCopy().getId()));
     }
 
-    private boolean isBookInsideCopyLendable(Copy copy) {
-        Book book = bookRepository.findById(copy.getBook().getId()).orElseThrow(() -> new NotFoundException("Libro non trovato con id: " + copy.getBook().getId()));
-        return book.getLendable();
+    private Book findBookInsideCopy(Copy copy) {
+        return bookRepository.findById(copy.getBook().getId()).orElseThrow(() -> new NotFoundException("Libro non trovato con id: " + copy.getBook().getId()));
     }
 }

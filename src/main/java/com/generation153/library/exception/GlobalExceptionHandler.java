@@ -37,12 +37,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserBlockedException.class)
-    public ResponseEntity<ApiErrorDto> handleMaxLoans(UserBlockedException ex) {
+    public ResponseEntity<ApiErrorDto> handleUserBlocked(UserBlockedException ex) {
         return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MaxLoansReachedException.class)
     public ResponseEntity<ApiErrorDto> handleMaxLoans(MaxLoansReachedException ex) {
+        return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotAvailableException.class)
+    public ResponseEntity<ApiErrorDto> handleNotAvailable(NotAvailableException ex) {
+        return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotLendableException.class)
+    public ResponseEntity<ApiErrorDto> handleNotLendable(NotLendableException ex) {
         return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
@@ -75,7 +85,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorDto> handleBadTime(BadTimeException ex) {
         return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
-    
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorDto> handleGeneric(Exception ex) {
         log.error("Errore interno del server", ex);

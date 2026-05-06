@@ -1,5 +1,8 @@
 package com.generation153.library.service;
 
+import com.generation153.library.dto.LoanCreateDTO;
+import com.generation153.library.dto.LoanResponseDTO;
+import com.generation153.library.dto.LoanUpdateDTO;
 import com.generation153.library.entity.Loan;
 import com.generation153.library.entity.User;
 
@@ -24,4 +27,12 @@ public interface LoanService {
     List<Loan> findAllActiveLoans();
 
     List<Loan> findAllLoansByUser(User user);
+
+    Loan mapToEntity(LoanCreateDTO dto);
+
+    Loan mapToEntity(LoanUpdateDTO dto);
+
+    LoanResponseDTO mapToResponseDTO(Loan loan);
+
+    List<LoanResponseDTO> mapToListResponseDTO(List<Loan> loans);
 }
